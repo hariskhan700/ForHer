@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For You ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#ffe3ec; --bg2:#ffc2d6; --text:#7a1237; --accent:#e11d5a; --accent2:#ff6b9a;
+  --card:#ffffff; --no:#fff; --noText:#7a1237;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#2a0715; --bg2:#5a0f2e; --text:#ffe3ec; --accent:#ff3d7f; --accent2:#ff8fb3;
+    --card:#3a0b20; --no:#3a0b20; --noText:#ffe3ec; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#2a0715; --bg2:#5a0f2e; --text:#ffe3ec; --accent:#ff3d7f; --accent2:#ff8fb3;
+  --card:#3a0b20; --no:#3a0b20; --noText:#ffe3ec; color-scheme:dark;
+}
+html,body{height:100%;margin:0}
+body{
+  font-family:'Quicksand',system-ui,sans-serif;
+  background:radial-gradient(circle at 50% 30%,var(--bg2),var(--bg1) 70%);
+  color:var(--text); overflow:hidden;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+}
+.main{padding:24px; position:relative; z-index:2}
+h1{
+  font-family:'Great Vibes','Brush Script MT',cursive;
+  font-weight:400; font-size:clamp(3.5rem,13vw,8rem); margin:0; color:var(--accent);
+  text-shadow:0 4px 24px color-mix(in srgb,var(--accent) 35%,transparent);
+  animation:beat 1.8s ease-in-out infinite;
+}
+h2{font-size:clamp(1.3rem,4vw,2rem); margin:.4em 0 1.6em; font-weight:500}
+.btns{display:flex; gap:28px; justify-content:center; align-items:center; min-height:70px}
+button{
+  font:inherit; font-weight:700; font-size:1.3rem; cursor:pointer;
+  width:130px; height:58px; border-radius:16px; border:2px solid var(--accent);
+  transition:transform .15s, box-shadow .15s;
+}
+#yes{background:var(--accent); color:#fff; box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 45%,transparent)}
+#yes:hover{transform:scale(1.08)}
+#no{background:var(--no); color:var(--noText)}
+#no.fleeing{position:fixed; z-index:5; transition:left .22s ease-out, top .22s ease-out}
+.slot{width:130px; height:58px}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+#win{
+  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+  flex-direction:column; z-index:10;
+  background:radial-gradient(circle at 50% 40%,var(--bg2),var(--bg1) 75%);
+}
+#win.show{display:flex}
+.bigheart{
+  width:min(70vw,420px); height:min(70vw,420px); position:relative;
+  display:flex; align-items:center; justify-content:center;
+  animation:pop .9s cubic-bezier(.2,1.6,.4,1) both, beat 1.5s .9s ease-in-out infinite;
+}
+.bigheart svg{position:absolute; inset:0; width:100%; height:100%; filter:drop-shadow(0 12px 30px color-mix(in srgb,var(--accent) 50%,transparent))}
+.bigheart span{
+  position:relative; font-family:'Great Vibes','Brush Script MT',cursive; color:#fff;
+  font-size:clamp(2.2rem,9vw,3.6rem); line-height:1.05; margin-top:-8%; padding:0 14%;
+}
+@keyframes pop{0%{transform:scale(0) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.float{position:fixed; bottom:-40px; z-index:11; pointer-events:none; animation:rise linear forwards}
+@keyframes rise{to{transform:translateY(-110vh) rotate(25deg); opacity:0}}
+@media (prefers-reduced-motion:reduce){h1,.bigheart{animation:none}}
+</style>
+</head>
+<body>
+<div class="main">
+  <h1>I love you</h1>
+  <h2>Do you love me?</h2>
+  <div class="btns">
+    <button id="yes">Yes</button>
+    <div class="slot"><button id="no">No</button></div>
+  </div>
+</div>
+
+<div id="win" aria-live="polite">
+  <div class="bigheart">
+    <svg viewBox="0 0 32 29" aria-hidden="true"><path fill="var(--accent)" d="M23.6 0c-3 0-5.4 1.6-7.6 4.2C13.8 1.6 11.4 0 8.4 0 3.8 0 0 3.8 0 8.4c0 9.8 11 15.4 16 20.6 5-5.2 16-10.8 16-20.6C32 3.8 28.2 0 23.6 0z"/></svg>
+    <span>You are my life</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var no=document.getElementById('no'), yes=document.getElementById('yes'), win=document.getElementById('win');
+  var px=-999, py=-999;
+
+  function flee(){
+    var w=no.offsetWidth, h=no.offsetHeight, m=16;
+    var maxX=window.innerWidth-w-m, maxY=window.innerHeight-h-m;
+    if(!no.classList.contains('fleeing')){
+      var r=no.getBoundingClientRect();
+      no.classList.add('fleeing');
+      no.style.left=r.left+'px'; no.style.top=r.top+'px';
+      void no.offsetWidth;
+    }
+    var x,y,tries=0;
+    do{
+      x=m+Math.random()*Math.max(0,maxX-m);
+      y=m+Math.random()*Math.max(0,maxY-m);
+      tries++;
+    }while(tries<40 && Math.hypot(x+w/2-px,y+h/2-py)<220);
+    no.style.left=x+'px'; no.style.top=y+'px';
+  }
+
+  function track(e){px=e.clientX; py=e.clientY;}
+  document.addEventListener('pointermove',track);
+
+  no.addEventListener('pointerenter',function(e){track(e); flee();});
+  no.addEventListener('pointerdown',function(e){e.preventDefault(); track(e); flee();});
+  no.addEventListener('touchstart',function(e){e.preventDefault(); flee();},{passive:false});
+  no.addEventListener('focus',flee);
+  no.addEventListener('click',function(e){e.preventDefault(); flee();});
+
+  // also dodge when the cursor merely gets close
+  document.addEventListener('pointermove',function(e){
+    if(!no.classList.contains('fleeing')) return;
+    var r=no.getBoundingClientRect();
+    if(Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))<90) flee();
+  });
+  window.addEventListener('resize',function(){ if(no.classList.contains('fleeing')) flee(); });
+
+  yes.addEventListener('click',function(){
+    win.classList.add('show');
+    no.style.display='none';
+    var chars=['♥','💖','💗','💕','❤️'];
+    for(var i=0;i<40;i++){
+      (function(i){
+        setTimeout(function(){
+          var s=document.createElement('div');
+          s.className='float';
+          s.textContent=chars[Math.floor(Math.random()*chars.length)];
+          s.style.left=Math.random()*100+'vw';
+          s.style.fontSize=(18+Math.random()*34)+'px';
+          s.style.color='var(--accent2)';
+          s.style.animationDuration=(3+Math.random()*3)+'s';
+          document.body.appendChild(s);
+          setTimeout(function(){s.remove()},6500);
+        },i*120);
+      })(i);
+    }
+  });
+})();
+</script>
+</body>
+</html>
